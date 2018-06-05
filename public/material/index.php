@@ -1,114 +1,95 @@
-<?php
-session_start();
-require '../../vendor/autoload.php';
-?><!DOCTYPE html>
+<?php require '../../bootstrap.php'; ?><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Material + Vue.js | Hybrid Login</title>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.green-light_green.min.css"/>
-    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
-    <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="./css/hybridlogin.css" rel="stylesheet">
 </head>
 <body>
 <div class="mdl-grid" id="app">
     <div class="mdl-cell mdl-cell--4-col"></div>
+
     <div class="mdl-cell mdl-cell--4-col">
-        <header class="mdl-layout__header">
-            <div class="mdl-layout-icon"></div>
-            <div class="mdl-layout__header-row">
-                <h1 class="mdl-layout__title">Hybrid Login</h1>
-            </div>
-            <div class="mdl-layout__header-row">
-                <!--<i class="material-icons">account_circle</i> {{email}}
-                <a href="."><i class="material-icons">highlight_off</i> Logout</a>-->
-                <p v-show="isLoggedIn"><i class="material-icons">account_circle</i> {{email}} <a href="../">Logout</a>
-                </p>
-            </div>
-        </header>
-        <div class="mdl-grid">
-            <div class="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet">
-                <div style="height: 100px; overflow: hidden;">
-                    <transition name="custom-classes-transition" ss
-                                enter-active-class="animated rubberBand"
-                                leave-active-class="animated bounceOutUp">
-                        <h4 v-show="isSignIn">Sign in! Welcome back...</h4>
-                    </transition>
-                    <transition name="custom-classes-transition"
-                                enter-active-class="animated rotateInDownLeft"
-                                leave-active-class="animated bounceOutUp">
-                        <h4 v-show="isSignUp">Sign up! Welcome!</h4>
-                    </transition>
-                    <transition name="custom-classes-transition"
-                                enter-active-class="animated bounceInDown"
-                                leave-active-class="animated bounceOutUp">
-                        <h4 v-show="!isSignIn && !isSignUp">Sign in, sign up, whatever...</h4>
-                    </transition>
 
-                </div>
+        <div class="demo-card-wide mdl-card mdl-shadow--2dp">
 
-                <transition name="custom-classes-transition"
-                            enter-active-class="animated wobble"
-                            leave-active-class="animated bounceOutRight">
-                    <div v-show="isSignedUp">
-                        <h4>Success! You're signed up.</h4>
+            <!-- HEADERS !-->
+            <div class="mdl-card__title">
+                <h2>
+                    <div class="mdl-card__title-text">Hybrid Login</div>
+                    <div v-show="isSignIn" class="mdl-card__subtitle-text">Sign in! Welcome back...</div>
+                    <div v-show="isSignUp" class="mdl-card__subtitle-text">Sign up! Welcome!</div>
+                    <div v-show="!isSignIn && !isSignUp" class="mdl-card__subtitle-text">Sign in, sign up, whatever...
                     </div>
-                </transition>
+                </h2>
+            </div>
 
-
-                <transition name="custom-classes-transition"
-                            enter-active-class="animated wobble"
-                            leave-active-class="animated bounceOutRight">
-                    <div v-show="isLoggedIn">
-                        <h4>{{email}} is logged in.</h4>
-                    </div>
-                </transition>
-
-                <transition name="fade" mode="out-in">
-                    <form v-show="!isLoggedIn" action="#">
-                        <div>
+            <!-- LOGIN FORM CARD !-->
+            <div v-show="!isLoggedIn">
+                <div class="mdl-grid">
+                    <form>
+                        <div class="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                <input v-model.lazy="email" v-on:change="checkEmail" class="mdl-textfield__input"
+                                <input v-model.lazy="email" v-on:change="checkEmail"
+                                       class="mdl-textfield__input"
                                        type="email" id="email"/>
                                 <label class="mdl-textfield__label" for="email">E-mail</label>
-                                <!--                        <i class="material-icons">check_circle</i>
-                                -->                    </div>
-                        </div>
+                            </div>
 
-                        <div>
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                <input v-model="password" v-on:keyup="checkPassword" class="mdl-textfield__input"
+                                <input v-model="password" v-on:keyup="checkPassword"
+                                       class="mdl-textfield__input"
                                        type="password" id="password"/>
                                 <label class="mdl-textfield__label" for="password">Password</label>
-                                <!--                        <i class="material-icons">check_circle</i>
-                                -->                    </div>
-                            <ul id="v-for">
-                                <li v-for="(passwordMessage) in passwordMessages">
-                                    {{passwordMessage}}
-                                </li>
-                            </ul>
+                            </div>
+                            <div>
+                                <button v-on:click="sign" type="button"
+                                        class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+                                    Go
+                                </button>
+                            </div>
                         </div>
-
-                        <div>
-                            <button v-on:click="sign" type="button"
-                                    class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
-                                Ok
-                            </button>
-                        </div>
-                        <div v-if="isProcessing">
-                            <div id="loading"
-                                 class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
+                        <ul id="v-for" class='mdl-list'>
+                            <li v-for="(passwordMessage) in passwordMessages" class="mdl-list__item">
+                                {{passwordMessage}}
+                            </li>
+                        </ul>
+                        <div v-show="isProcessing">
+                            <div id="p2" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
                         </div>
                     </form>
-                </transition>
+                </div>
+            </div>
+
+            <!-- LOGGED IN CARD !-->
+            <div v-show="isLoggedIn">
+                <div class="mdl-card__supporting-text">
+                    <h5>Yayyy...</h5>
+                    <h6>{{email}} is logged in.</h6>
+                    <p>UUID: {{userUUID}}</p>
+                </div>
+                <div class="mdl-card__actions mdl-card--border">
+                    <a v-on:click="logout" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                        Log out
+                    </a>
+                </div>
+                <!--<div class="mdl-card__menu">
+                    <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+                        <i class="material-icons">share</i>
+                    </button>
+                </div>!-->
             </div>
         </div>
-        <div class="mdl-cell mdl-cell--4-col"></div>
     </div>
+
+    <div class="mdl-cell mdl-cell--4-col"></div>
 </div>
 <script type="text/javascript">
     var vm = new Vue({
@@ -135,7 +116,7 @@ require '../../vendor/autoload.php';
                     vm.isSignIn = false;
                 } else {
                     vm.isProcessing = true;
-                    fetch('/?route=user&action=isRegistered&email=' + encodeURIComponent(vm.email)
+                    fetch('/user/isRegistered?email=' + encodeURIComponent(vm.email)
                         + '&sessionId=' + '<?=session_id();?>'
                     )
                         .then(queryResponse => queryResponse.json())
@@ -164,13 +145,12 @@ require '../../vendor/autoload.php';
                 vm.checkPassword();
                 if (vm.passwordMessages.length === 0 && vm.isSignIn) {
                     vm.isProcessing = true;
-                    fetch('/', {
+                    fetch('/user/signIn', {
                         method: 'POST',
                         headers: {
                             "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
                         },
-                        body: 'route=user&action=signIn'
-                        + '&email=' + encodeURIComponent(vm.email)
+                        body: 'email=' + encodeURIComponent(vm.email)
                         + '&password=' + encodeURIComponent(vm.password)
                         + '&sessionId=' + '<?=session_id();?>'
                     })
@@ -193,13 +173,12 @@ require '../../vendor/autoload.php';
                         });
                 } else if (vm.passwordMessages.length === 0 && vm.isSignUp) {
                     vm.isProcessing = true;
-                    fetch('/', {
+                    fetch('/user/signUp', {
                         method: 'POST',
                         headers: {
                             "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
                         },
-                        body: 'route=user&action=signUp'
-                        + '&email=' + encodeURIComponent(vm.email)
+                        body: 'email=' + encodeURIComponent(vm.email)
                         + '&password=' + encodeURIComponent(vm.password)
                         + '&sessionId=' + '<?=session_id();?>'
                     })
@@ -224,8 +203,8 @@ require '../../vendor/autoload.php';
             },
             logout: function () {
                 vm.isProcessing = true;
-                fetch('/?route=user&action=logout'
-                    + '&sessionId=' + '<?=session_id();?>'
+                fetch('/user/logout'
+                    + '?sessionId=' + '<?=session_id();?>'
                 )
                     .then(queryResponse => queryResponse.json())
                     .then(queryResponse => {

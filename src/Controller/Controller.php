@@ -13,7 +13,6 @@ class Controller extends AbstractController
      * @var Container $container
      */
     private $container;
-
     /**
      * @var AbstractController $controller the context controller
      */
@@ -29,7 +28,7 @@ class Controller extends AbstractController
     {
         $this->controller = $this;
         $this->container = $container;
-        if (null === $route) {
+        if (null === $route && null === ($route = $this->getURIParam(1))) {
             $this->invalidRequest();
         }
         $routeController = "{$route}Controller";
@@ -42,11 +41,23 @@ class Controller extends AbstractController
 
 
     /**
+     * @param int $position
+     * @return null|string
+     */
+    private function getURIParam(int $position): ?string
+    {
+        $requestURIArray = explode('?', $_SERVER['REQUEST_URI']);
+        $requestURIArray = explode('/', $requestURIArray[0] ?? '');
+        return $requestURIArray[$position] ?? null;
+    }
+
+
+    /**
      * @param null|string $action
      */
     public function run(?string $action): void
     {
-        $action = $action ?? 'index';
+        $action = $action ?? $this->getURIParam(2);
         if (method_exists($this->controller, $action)) {
             echo $this->controller->$action();
             exit;
@@ -74,4 +85,6 @@ class Controller extends AbstractController
     {
         return new UserController($this->container->getUserService());
     }
+
+
 }

@@ -1,7 +1,4 @@
-<?php
-session_start();
-require '../../vendor/autoload.php';
-?><!DOCTYPE html>
+<?php require '../../bootstrap.php'; ?><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,7 +7,7 @@ require '../../vendor/autoload.php';
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
           integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
-    <link href="css/hybridlogin.css" rel="stylesheet">
+    <link href="./css/hybridlogin.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 </head>
 <body>
@@ -90,7 +87,7 @@ require '../../vendor/autoload.php';
                     vm.isSignIn = false;
                 } else {
                     vm.isProcessing = true;
-                    fetch('/?route=user&action=isRegistered&email=' + encodeURIComponent(vm.email)
+                    fetch('/user/isRegistered?email=' + encodeURIComponent(vm.email)
                         + '&sessionId=' + '<?=session_id();?>'
                     )
                         .then(queryResponse => queryResponse.json())
@@ -119,13 +116,12 @@ require '../../vendor/autoload.php';
                 vm.checkPassword();
                 if (vm.passwordMessages.length === 0 && vm.isSignIn) {
                     vm.isProcessing = true;
-                    fetch('/', {
+                    fetch('/user/signIn', {
                         method: 'POST',
                         headers: {
                             "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
                         },
-                        body: 'route=user&action=signIn'
-                        + '&email=' + encodeURIComponent(vm.email)
+                        body: 'email=' + encodeURIComponent(vm.email)
                         + '&password=' + encodeURIComponent(vm.password)
                         + '&sessionId=' + '<?=session_id();?>'
                     })
@@ -148,13 +144,12 @@ require '../../vendor/autoload.php';
                         });
                 } else if (vm.passwordMessages.length === 0 && vm.isSignUp) {
                     vm.isProcessing = true;
-                    fetch('/', {
+                    fetch('/user/signUp', {
                         method: 'POST',
                         headers: {
                             "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
                         },
-                        body: 'route=user&action=signUp'
-                        + '&email=' + encodeURIComponent(vm.email)
+                        body: 'email=' + encodeURIComponent(vm.email)
                         + '&password=' + encodeURIComponent(vm.password)
                         + '&sessionId=' + '<?=session_id();?>'
                     })
@@ -179,8 +174,8 @@ require '../../vendor/autoload.php';
             },
             logout: function () {
                 vm.isProcessing = true;
-                fetch('/?route=user&action=logout'
-                    + '&sessionId=' + '<?=session_id();?>'
+                fetch('/user/logout'
+                    + '?sessionId=' + '<?=session_id();?>'
                 )
                     .then(queryResponse => queryResponse.json())
                     .then(queryResponse => {
