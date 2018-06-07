@@ -29,7 +29,7 @@ final class UserControllerTest extends TestCase
 
     public function setUp()
     {
-        $container = new \HybridLogin\Container();
+        $container = new \HybridLogin\Container(new \HybridLogin\Model\Repository\FooRepositoryHandler());
         $this->userService = $container->getUserService();
         $this->controller = new UserController($this->userService);
     }
