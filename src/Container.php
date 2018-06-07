@@ -31,6 +31,16 @@ class Container
 
 
     /**
+     * Container constructor.
+     * @param RepositoryHandlerInterface|null $repositoryHandler
+     */
+    public function __construct(RepositoryHandlerInterface $repositoryHandler = null)
+    {
+        $this->repositoryHandler = $repositoryHandler ?? null;
+    }
+
+
+    /**
      * @return ErrorHandlerInterface
      */
     public function getErrorHandler(): ErrorHandlerInterface

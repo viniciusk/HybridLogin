@@ -74,15 +74,13 @@ class PDORepositoryHandler implements RepositoryHandlerInterface
 
 
     /**
-     * @param string $entity
-     * @param array $attributes
-     * @return array
+     * @inheritdoc
      */
-    public function findOne(string $entity, array $attributes): array
+    public function findOne(string $entity, array $attributes): ?array
     {
         $sql = "SELECT * FROM  `{$entity}` WHERE {$this->sqlfyAttributesForUpdate($attributes)}";
         $ret = $this->pdo->query($sql);
         $result = $ret->fetch(PDO::FETCH_ASSOC);
-        return \is_array($result) ? $result : [];
+        return \is_array($result) ? $result : null;
     }
 }

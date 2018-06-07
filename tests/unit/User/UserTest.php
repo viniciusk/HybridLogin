@@ -17,7 +17,7 @@ final class UserTest extends TestCase
 
     public function setUp()
     {
-        $container = new \HybridLogin\Container();
+        $container = new \HybridLogin\Container(new \HybridLogin\Model\Repository\FooRepositoryHandler());
         $this->userService = $container->getUserService();
         $this->user = $this->userService->create();
     }
