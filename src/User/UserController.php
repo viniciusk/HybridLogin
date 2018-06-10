@@ -4,11 +4,15 @@ namespace HybridLogin\User;
 
 
 use HybridLogin\Controller\AbstractController;
-use HybridLogin\Controller\Response;
+use HybridLogin\Controller\Controller;
 use HybridLogin\Error\ErrorMessagesInterface;
 
 class UserController extends AbstractController
 {
+    /**
+     * @var Controller $parentController
+     */
+    private $parentController;
     /**
      * @var UserService $userService
      */
@@ -17,97 +21,88 @@ class UserController extends AbstractController
 
     /**
      * UserController constructor.
+     * @param Controller $controller
      * @param UserService $userService
      */
-    public function __construct(UserService $userService)
+    public function __construct(Controller $controller, UserService $userService)
     {
+        $this->parentController = $controller;
         $this->userService = $userService;
     }
 
 
     /**
-     * @return string
+     * Checks if an email is registered
      */
-    public function isRegistered(): string
+    public function isRegistered(): void
     {
-        $response = new Response();
-
         $email = $_REQUEST['email'] ?? null;
         if (null === $email) {
-            $response->addError(ErrorMessagesInterface::INVALID_EMAIL);
-            return $this->formatResponse($response);
+            $this->parentController->getResponse()->addError(ErrorMessagesInterface::INVALID_EMAIL);
+            $this->parentController->finish();
         }
 
         $user = $this->userService->findOneByEmail($email);
         if (null !== $user) {
-            $response->addData('isRegistered', true);
-            $response->addData('userId', $user->getUUID());
+            $this->parentController->getResponse()->setNode('isRegistered', true);
+            $this->parentController->getResponse()->setNode('userId', $user->getUUID());
         } else {
-            $response->addData('isRegistered', false);
+            $this->parentController->getResponse()->setNode('isRegistered', false);
         }
-        return $this->formatResponse($response);
     }
 
 
     /**
-     * @return string
+     * Sign in
      */
-    public function signIn(): string
+    public function signIn(): void
     {
-        $response = new Response();
-
         $email = $_REQUEST['email'] ?? null;
         if (null === $email) {
-            $response->addError(ErrorMessagesInterface::INVALID_EMAIL);
+            $this->parentController->getResponse()->addError(ErrorMessagesInterface::INVALID_EMAIL);
         }
         $password = $_REQUEST['password'] ?? null;
         if (null === $password) {
-            $response->addError(ErrorMessagesInterface::INVALID_PASSWORD);
+            $this->parentController->getResponse()->addError(ErrorMessagesInterface::INVALID_PASSWORD);
         }
-        if ($response->hasError()) {
-            return $this->formatResponse($response);
+        if ($this->parentController->getResponse()->hasError()) {
+            $this->parentController->finish();
         }
 
         $user = $this->userService->findOneByEmail($email);
         if (null !== $user && $this->userService->login($user, $password)) {
-            $response->addData('isRegistered', true);
-            $response->addData('isLoggedIn', true);
-            $response->addData('userUUID', (string) $user->getUUID());
+            $this->parentController->getResponse()->setNode('isRegistered', true);
+            $this->parentController->getResponse()->setNode('isLoggedIn', true);
+            $this->parentController->getResponse()->setNode('userUUID', (string) $user->getUUID());
         } else {
-            $response->addData('isLoggedIn', false);
-            $response->addErrors($this->userService->getErrorHandler()->getErrors());
+            $this->parentController->getResponse()->setNode('isLoggedIn', false);
+            $this->parentController->getResponse()->addErrors($this->userService->getErrorHandler()->getErrors());
         }
-
-        return $this->formatResponse($response);
     }
 
 
     /**
-     * @return string
+     * Sign up
      */
-    public function signUp(): string
+    public function signUp(): void
     {
-        $response = new Response();
         $user = $this->userService->createFromArray($_REQUEST);
         if (true === $this->userService->save($user) && true === $this->userService->login($user, $_REQUEST['password'])) {
-            $response->addData('isRegistered', true);
-            $response->addData('isLoggedIn', true);
-            $response->addData('userUUID', (string) $user->getUUID());
+            $this->parentController->getResponse()->setNode('isRegistered', true);
+            $this->parentController->getResponse()->setNode('isLoggedIn', true);
+            $this->parentController->getResponse()->setNode('userUUID', (string) $user->getUUID());
         } else {
-            $response->addData('isLoggedIn', false);
-            $response->addErrors($this->userService->getErrorHandler()->getErrors());
+            $this->parentController->getResponse()->setNode('isLoggedIn', false);
+            $this->parentController->getResponse()->addErrors($this->userService->getErrorHandler()->getErrors());
         }
-        return $this->formatResponse($response);
     }
 
 
     /**
-     * @return string
+     * Logout
      */
-    public function logout(): string
+    public function logout(): void
     {
         $this->userService->logout();
-        $response = new Response();
-        return $this->formatResponse($response);
     }
 }
