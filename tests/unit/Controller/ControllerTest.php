@@ -15,7 +15,7 @@ class ControllerTest extends TestCase
 
     public function setUp(): void
     {
-        $this->container = new \HybridLogin\Container();
+        $this->container = new \HybridLogin\Container(new \HybridLogin\Model\Repository\FooRepositoryHandler());
         $this->controller = new HybridLogin\Controller\Controller($this->container, ['route'=>'user', 'action'=>'isRegistered']);
     }
 
