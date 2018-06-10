@@ -101,9 +101,11 @@ class Response
     public function finish(bool $outputBodyOnly = false): void
     {
         if (!$outputBodyOnly) {
-            header("{$_SERVER['SERVER_PROTOCOL']} {$this->getStatus()}");
+            $serverProtocol = $_SERVER['SERVER_PROTOCOL'] ?? '';
+            header("{$serverProtocol} {$this->getStatus()}");
             header('Content-Type: application/json');
         }
+        // Output body
         echo json_encode($this->getResponseArray());
         if (!$outputBodyOnly) {
             exit(0);

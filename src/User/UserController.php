@@ -3,11 +3,15 @@
 namespace HybridLogin\User;
 
 
-use HybridLogin\Controller\AbstractController;
+use HybridLogin\Controller\ContextControllerInterface;
 use HybridLogin\Controller\Controller;
 use HybridLogin\Error\ErrorMessagesInterface;
 
-class UserController extends AbstractController
+/**
+ * Class UserController
+ * @package HybridLogin\User
+ */
+class UserController implements ContextControllerInterface
 {
     /**
      * @var Controller $parentController
@@ -32,6 +36,15 @@ class UserController extends AbstractController
 
 
     /**
+     * @inheritdoc
+     */
+    public function getParentController(): Controller
+    {
+        return $this->parentController;
+    }
+
+
+    /**
      * Checks if an email is registered
      */
     public function isRegistered(): void
@@ -39,7 +52,7 @@ class UserController extends AbstractController
         $email = $_REQUEST['email'] ?? null;
         if (null === $email) {
             $this->parentController->getResponse()->addError(ErrorMessagesInterface::INVALID_EMAIL);
-            $this->parentController->finish();
+            return;
         }
 
         $user = $this->userService->findOneByEmail($email);
@@ -66,7 +79,7 @@ class UserController extends AbstractController
             $this->parentController->getResponse()->addError(ErrorMessagesInterface::INVALID_PASSWORD);
         }
         if ($this->parentController->getResponse()->hasError()) {
-            $this->parentController->finish();
+            return;
         }
 
         $user = $this->userService->findOneByEmail($email);

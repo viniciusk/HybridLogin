@@ -7,7 +7,11 @@ use HybridLogin\Container;
 use HybridLogin\Error\ErrorMessagesInterface;
 use HybridLogin\User\UserController;
 
-class Controller extends AbstractController
+/**
+ * Class Controller
+ * @package HybridLogin\Controller
+ */
+class Controller
 {
     /**
      * @var array $params
@@ -26,7 +30,7 @@ class Controller extends AbstractController
      */
     private $container;
     /**
-     * @var AbstractController $controller the context controller
+     * @var ContextControllerInterface $controller the context controller
      */
     private $controller;
     /**
@@ -42,7 +46,6 @@ class Controller extends AbstractController
      */
     public function __construct(Container $container, ?array $params = null)
     {
-        $this->controller = $this;
         $this->container = $container;
         $this->response = new Response();
         $this->resolveParams($params);
@@ -59,9 +62,9 @@ class Controller extends AbstractController
 
 
     /**
-     * @return AbstractController
+     * @return ContextControllerInterface
      */
-    public function getEffectiveController(): AbstractController
+    public function getEffectiveController(): ContextControllerInterface
     {
         return $this->controller;
     }
@@ -127,42 +130,49 @@ class Controller extends AbstractController
 
     /**
      * Runs the expected action
+     * @param bool $outputBodyOnly
      */
-    public function run(): void
+    public function run(bool $outputBodyOnly = false): void
     {
         $action = $this->getAction();
         if (method_exists($this->controller, $action)) {
             $this->controller->$action();
-            $this->finish();
+            $this->finish($outputBodyOnly);
+            if ($outputBodyOnly) {
+                return;
+            }
         }
         $this->response->setStatus(Response::RESPONSE_404_NOT_FOUND);
-        $this->finish();
+        $this->finish($outputBodyOnly);
     }
 
 
     /**
      * Terminates the execution through the Response
+     * @param bool $outputBodyOnly
      */
-    public function finish(): void
+    public function finish(bool $outputBodyOnly = false): void
     {
-        $this->response->finish();
+        $this->response->finish($outputBodyOnly);
     }
 
 
     /**
      * Adds an error and terminates the execution
+     * @param bool $outputBodyOnly
      */
-    private function finishWithInvalidRequestError(): void
+    public function finishWithInvalidRequestError(bool $outputBodyOnly = false): void
     {
         $this->response->addError(ErrorMessagesInterface::INVALID_REQUEST);
-        $this->finish();
+        $this->response->setStatus(Response::RESPONSE_400_BAD_REQUEST);
+        $this->finish($outputBodyOnly);
     }
 
 
     /**
-     * @return AbstractController
+     * @return ContextControllerInterface
      */
-    private function userController(): AbstractController
+    private function userController(): ContextControllerInterface
     {
         return new UserController($this, $this->container->getUserService());
     }

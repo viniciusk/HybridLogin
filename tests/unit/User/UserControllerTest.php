@@ -29,22 +29,88 @@ final class UserControllerTest extends TestCase
         $this->controller = $controller->getEffectiveController();
     }
 
-
     public function testControllerIsInstanceOfUserController(): void
     {
         $this->assertInstanceOf(UserController::class, $this->controller);
     }
 
-
-    /*public function testIsRegisteredByEmailHasJsonResponse(): void
+    public function testIsRegisteredNullEmail(): void
     {
-        //$email = 'test@example.com';
+        $_REQUEST['email'] = null;
+        $this->controller->isRegistered();
+        $this->assertEquals(\HybridLogin\Error\ErrorMessagesInterface::INVALID_EMAIL,
+            $this->controller->getParentController()->getResponse()->getLastError());
+    }
 
-        // todo: mock request
+    public function testSignInNullEmail(): void
+    {
+        $_REQUEST['email'] = null;
+        $this->controller->signIn();
+        $this->assertArraySubset([\HybridLogin\Error\ErrorMessagesInterface::INVALID_EMAIL],
+            $this->controller->getParentController()->getResponse()->getErrors());
+    }
 
-        $response = $this->controller->isRegistered();
+    public function testIsNotRegistered(): void
+    {
+        $_REQUEST['email'] = 'not@notnot.not';
+        $this->controller->isRegistered();
+        $this->assertFalse($this->controller->getParentController()->getResponse()->getNode('isRegistered'));
+    }
 
-        $this->assertJson($response);
-    }*/
+    public function testSignInWithInvalidPassword(): void
+    {
+        $_REQUEST['email'] = 'not@notnot.not';
+        $this->controller->signIn();
+        $this->assertEquals(\HybridLogin\Error\ErrorMessagesInterface::INVALID_PASSWORD,
+            $this->controller->getParentController()->getResponse()->getLastError());
+    }
+
+    public function testSignUpAndIsRegisteredAndSignIn(): void
+    {
+        $_REQUEST['email'] = 'not@notnot.not';
+        $_REQUEST['password'] = 'ASDasd123';
+        $this->controller->signUp();
+        $this->assertTrue($this->controller->getParentController()->getResponse()->getNode('isLoggedIn'));
+        $this->assertTrue($this->controller->getParentController()->getResponse()->getNode('isRegistered'));
+
+        $this->controller->isRegistered();
+        $this->assertTrue($this->controller->getParentController()->getResponse()->getNode('isRegistered'));
+
+        $this->controller->signIn();
+        $this->assertTrue($this->controller->getParentController()->getResponse()->getNode('isLoggedIn'));
+        $this->assertEquals($_SESSION['loggedUserEmail'], $_REQUEST['email']);
+
+        $_REQUEST['password'] = 'ZZZnot999';
+        $this->controller->signIn();
+        $this->assertFalse($this->controller->getParentController()->getResponse()->getNode('isLoggedIn'));
+    }
+
+    public function testSignUpAndLoginAndLogout(): void
+    {
+        $_REQUEST['email'] = 'not@notnot.not';
+        $_REQUEST['password'] = 'ASDasd123';
+        $this->controller->signUp();
+        $this->assertTrue($this->controller->getParentController()->getResponse()->getNode('isLoggedIn'));
+        $this->assertTrue($this->controller->getParentController()->getResponse()->getNode('isRegistered'));
+
+        $this->controller->isRegistered();
+        $this->assertTrue($this->controller->getParentController()->getResponse()->getNode('isRegistered'));
+
+        $this->controller->signIn();
+        $this->assertTrue($this->controller->getParentController()->getResponse()->getNode('isLoggedIn'));
+        $this->assertEquals($_SESSION['loggedUserEmail'], $_REQUEST['email']);
+
+        $this->controller->logout();
+        $this->assertNull($_SESSION['loggedUserEmail']);
+    }
+
+    public function testSignUpFailure(): void
+    {
+        $_REQUEST['email'] = 'not@notnot.not';
+        $_REQUEST['password'] = 'ASDasd';
+        $this->controller->signUp();
+        $this->assertFalse($this->controller->getParentController()->getResponse()->getNode('isLoggedIn'));
+        $this->assertContains(\HybridLogin\User\UserPassword::MUST_HAVE_8_CHAR_OR_MORE,$this->controller->getParentController()->getResponse()->getErrors());
+    }
 
 }

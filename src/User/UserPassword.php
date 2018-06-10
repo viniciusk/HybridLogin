@@ -46,11 +46,8 @@ final class UserPassword
      * @param string $password
      * @return string
      */
-    public static function encryptPassword(?string $password): string
+    public static function encryptPassword(string $password): string
     {
-        if (null === $password) {
-            return null;
-        }
         return hash('sha256', $password);
     }
 
