@@ -7,9 +7,9 @@ interface ErrorHandlerInterface
 {
     public function clearErrors(): void;
 
-    public function addError(string $message): ErrorHandlerInterface;
+    public function addError(string $message);
 
-    public function addErrors(array $errors): ErrorHandlerInterface;
+    public function addErrors(array $errors);
 
     public function getErrors(): array;
 

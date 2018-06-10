@@ -2,10 +2,16 @@
 
 namespace HybridLogin\Controller;
 
-use HybridLogin\Error\AbstractErrorHandler;
+use HybridLogin\Error\ErrorHandlerTrait;
 
-class Response extends AbstractErrorHandler
+/**
+ * Class Response
+ * @package HybridLogin\Controller
+ */
+class Response
 {
+    use ErrorHandlerTrait;
+
     public const RESPONSE_200_OK = '200 OK';
     public const RESPONSE_400_BAD_REQUEST = '400 Bad Request';
     public const RESPONSE_404_NOT_FOUND = '404 Not Found';

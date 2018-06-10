@@ -3,7 +3,7 @@
 namespace HybridLogin\Error;
 
 
-class ErrorHandler extends AbstractErrorHandler
+class ErrorHandler implements ErrorHandlerInterface
 {
-
+    use ErrorHandlerTrait;
 }

@@ -4,30 +4,22 @@ namespace HybridLogin\Error;
 
 
 /**
- * Class ErrorHandler
- * @package HybridLogin
- *
- * @property array $errors
+ * Trait ErrorHandlerTrait
+ * @package HybridLogin\Error
  */
-abstract class AbstractErrorHandler implements ErrorHandlerInterface
+trait ErrorHandlerTrait
 {
+    /**
+     * @var array $errors
+     */
     private $errors = [];
 
 
     /**
-     * Clear errors
-     */
-    public function clearErrors(): void
-    {
-        $this->errors = [];
-    }
-
-
-    /**
      * @param string $message
-     * @return ErrorHandlerInterface
+     * @return self
      */
-    public function addError(string $message): ErrorHandlerInterface
+    public function addError(string $message): self
     {
         $this->errors[] = $message;
         return $this;
@@ -36,14 +28,23 @@ abstract class AbstractErrorHandler implements ErrorHandlerInterface
 
     /**
      * @param array $errors
-     * @return ErrorHandlerInterface
+     * @return self
      */
-    public function addErrors(array $errors): ErrorHandlerInterface
+    public function addErrors(array $errors): self
     {
         foreach ($errors as $error) {
             $this->addError($error);
         }
         return $this;
+    }
+
+
+    /**
+     * Clear errors
+     */
+    public function clearErrors(): void
+    {
+        $this->errors = [];
     }
 
 

@@ -26,7 +26,6 @@ final class UserServiceTest extends TestCase
         $this->assertInstanceOf(UserService::class, $this->userService);
     }
 
-
     public function testCreateUser(): void
     {
         $userData = [
@@ -36,7 +35,6 @@ final class UserServiceTest extends TestCase
         $user = $this->userService->createFromArray($userData, false);
         $this->assertInstanceOf(User::class, $user);
     }
-
 
     public function testFailToCreateUserBadFormat(): void
     {
@@ -49,7 +47,6 @@ final class UserServiceTest extends TestCase
         $errors = $this->userService->getErrorHandler()->getErrors();
         $this->assertContains(\HybridLogin\Error\ErrorMessagesInterface::INVALID_EMAIL, $errors);
     }
-
 
     public function testFailToCreateUserShortPassword(): void
     {

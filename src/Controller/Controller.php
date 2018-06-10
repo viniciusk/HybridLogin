@@ -166,6 +166,4 @@ class Controller extends AbstractController
     {
         return new UserController($this, $this->container->getUserService());
     }
-
-
 }
