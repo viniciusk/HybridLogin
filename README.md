@@ -5,8 +5,3 @@
 
 # Hybrid Login
 A one-pager that allows you to sign in and sign up, descomplicating authentication.
-
-## Examples
-* http://vk-php-eb-tests.eu-west-1.elasticbeanstalk.com/public/bootstrap/
-* http://vk-php-eb-tests.eu-west-1.elasticbeanstalk.com/public/vuetify/
-* http://vk-php-eb-tests.eu-west-1.elasticbeanstalk.com/public/material/
